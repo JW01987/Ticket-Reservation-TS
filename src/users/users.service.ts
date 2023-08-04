@@ -17,7 +17,6 @@ export class UsersService {
     private pointsService: PointsService,
   ) {}
 
-  //findOne  파라미터와 상관없이 검색안되나
   async findOne(email: string): Promise<User | undefined> {
     return await this.userRepository.findOne({ where: { email } });
   }
