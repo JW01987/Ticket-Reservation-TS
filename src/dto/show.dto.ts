@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsDate,
   IsNotEmpty,
   IsNumber,
@@ -35,7 +36,7 @@ export class ShowDto {
   @IsNotEmpty()
   totalSeat: number;
 
-  @IsDate()
+  @IsArray()
   @IsNotEmpty()
-  time: Date;
+  time: string[];
 }

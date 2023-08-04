@@ -1,4 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Reservation } from './reservation.entity';
+import { Seat } from './seat.entity';
 
 @Entity()
 export class Show {
@@ -28,4 +37,16 @@ export class Show {
 
   @Column({ nullable: false })
   time: Date;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+
+  @OneToMany(() => Seat, (seat) => seat.show)
+  seats: Seat[];
+
+  @OneToMany(() => Reservation, (reservation) => reservation.show)
+  reservations: Reservation[];
 }

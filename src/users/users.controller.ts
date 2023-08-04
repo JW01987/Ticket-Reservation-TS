@@ -6,7 +6,10 @@ import {
   HttpStatus,
   Param,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '../auth/auth.guard';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersService } from './users.service';
 
@@ -16,12 +19,13 @@ export class UsersController {
 
   @HttpCode(HttpStatus.OK)
   @Post('signup')
-  signUp(@Body() signUpDto: CreateUserDto) {
+  signUp(@Body() signUpDto: CreateUserDto): Promise<{ message: string }> {
     return this.userService.signUp(signUpDto);
   }
-
-  @Get('profile/:id')
-  profile(@Param() id: number): Promise<{ name: string }> {
-    return this.userService.profile(id);
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  profile(@Req() req: Request): Promise<{ name: string; point: number }> {
+    const { userId } = req['user'];
+    return this.userService.profile(userId);
   }
 }

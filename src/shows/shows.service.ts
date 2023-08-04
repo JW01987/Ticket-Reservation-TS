@@ -7,11 +7,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShowDto } from '../dto/show.dto';
 import { Show } from '../entities/show.entity';
+import { SeatsService } from '../seats/seats.service';
 
 @Injectable()
 export class ShowsService {
   constructor(
     @InjectRepository(Show) private showsRepository: Repository<Show>,
+    private seatsService: SeatsService,
   ) {}
 
   async findOne(id: number) {
@@ -19,13 +21,20 @@ export class ShowsService {
     if (!found) throw new NotFoundException('해당 공연이 없습니다');
     return found;
   }
-  async createShow(userId: number, isAdmin: boolean, show: ShowDto) {
+  async createShow(userId: number, isAdmin: boolean, showDto: ShowDto) {
     //생각헤보니까 배열로 받은 시간을 분리해서 하나하나 넣으면 될듯?;
     if (isAdmin !== true) {
       throw new NotAcceptableException('권한이 없습니다');
     }
-    await this.showsRepository.insert(show);
-    return true;
+    const { time, ...showData } = showDto;
+    const shows = time.map((t) => {
+      const show = new Show();
+      Object.assign(show, showData);
+      show.time = new Date(t);
+      return show;
+    });
+    await this.showsRepository.save(shows);
+    return { message: '공연 등록에 성공하였습니다.' };
   }
 
   async getAll() {
@@ -82,7 +91,12 @@ export class ShowsService {
   }
 
   async getDetail(id: number) {
-    return this.findOne(id);
-    //가져온 토탈 좌석 수에서 예약된 좌석 수 빼서 보여주기
+    const found = await this.findOne(id);
+    const seats = await this.seatsService.findByShow(id);
+
+    return {
+      ...found,
+      remainSeat: Number(found.totalSeat) - Number(seats),
+    };
   }
 }

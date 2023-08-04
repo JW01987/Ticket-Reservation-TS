@@ -19,13 +19,16 @@ export class ShowsController {
 
   @UseGuards(AuthGuard)
   @Post()
-  createShow(@Req() req: Request, @Body() show: ShowDto): Promise<boolean> {
+  createShow(
+    @Req() req: Request,
+    @Body() show: ShowDto,
+  ): Promise<{ message: string }> {
     const { userId, isAdmin } = req['user'];
     return this.showsService.createShow(userId, isAdmin, show);
   }
 
   @Get()
-  getAll(): Promise<ShowDto[]> {
+  getAll() {
     return this.showsService.getAll();
   }
 
@@ -35,7 +38,7 @@ export class ShowsController {
   }
 
   @Get(':id')
-  getDetail(@Param('id') id: number): Promise<ShowDto> {
+  getDetail(@Param('id') id: number) {
     return this.showsService.getDetail(id);
   }
 }

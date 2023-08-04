@@ -8,5 +8,6 @@ import { PointsService } from './points.service';
   imports: [TypeOrmModule.forFeature([Point])],
   controllers: [PointsController],
   providers: [PointsService],
+  exports: [PointsService],
 })
 export class PointsModule {}
